@@ -63,10 +63,7 @@
   				</lib>
   				<lib dir="${dist}/jars/">
   				</lib>
-  				
-			</war>        	
-        	
-        	
+			</war>
     </target>
     
     <target name="clean" >

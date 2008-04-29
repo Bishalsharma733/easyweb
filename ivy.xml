@@ -10,7 +10,8 @@
         <dependency org="commons-lang" name="commons-lang" rev="2.0" conf="main->default"/>
         <dependency org="commons-cli" name="commons-cli" rev="1.0" conf="main->default"/>
         <dependency org="junit" name="junit" rev="4.4" conf="test->default"/>
-        
+
+        <dependency org="httpunit" name="httpunit" rev="1.6.1" conf="AcceptanceTest->default"/>
         <dependency org="cargo" name="cargo-ant" rev="0.7" conf="AcceptanceTest->default"/>
         <dependency org="cargo" name="cargo-core-uberjar" rev="0.7" conf="AcceptanceTest->default"/>
 
