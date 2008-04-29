@@ -1,0 +1,78 @@
+<project xmlns:ivy="antlib:org.apache.ivy.ant" name="easyweb" default="go">
+
+    <property name="appName" value="easyweb" />
+
+    <property name="build.dir" value="build" />
+    <property name="dist" value="dist" />
+    <property name="build.main" value="${build.dir}/main" />
+    <property name="build.test" value="${build.dir}/test" />
+    <property name="src.dir" value="src/main/java" />
+    <property name="test.dir" value="src/test/java" />
+    <property name="reports.tests" value="reports/tests" />
+    
+    <!-- ================================= 
+          target: resolve              
+         ================================= -->
+    <target name="resolve" description="--> retrieve dependencies with ivy">
+        <ivy:retrieve/>
+    </target>
+    <target name="go" depends="resolve">
+            <ivy:cachepath conf="main" pathid="lib.path.id" />
+            <ivy:cachepath conf="test" pathid="test.lib.path.id" />
+            
+            <mkdir dir="${build.dir}" />
+            <mkdir dir="${build.main}" />
+            <mkdir dir="${build.test}" />
+            <mkdir dir="${dist}" />
+            <mkdir dir="${dist}/jars" />
+            <mkdir dir="${reports.tests}" />
+        	<javac srcdir="${src.dir}" destdir="${build.main}" classpathref="lib.path.id" />
+
+        	<javac srcdir="${test.dir}" destdir="${build.test}" >
+				<classpath>
+    				<pathelement location="${build.main}"/>
+    				<pathelement location="${build.test}"/>
+    				<path refid="test.lib.path.id"/>
+  				</classpath>
+  			</javac>
+  				        	
+        	<junit fork="yes" forkmode="once" failureproperty="JunitFailed" printsummary="yes">
+				<classpath>
+    				<pathelement location="${build.main}"/>
+    				<pathelement location="${build.test}"/>
+    				<path refid="test.lib.path.id"/>
+  				</classpath>
+  				<formatter type="xml"/>
+  				<formatter type="plain"/>
+  				  <batchtest  todir="${reports.tests}">
+    				<fileset dir="${test.dir}">
+      					<include name="**/*Test*.java"/>
+    				</fileset>
+  				</batchtest>
+			</junit>
+        	<fail if="JunitFailed" message="JUnit failures" />
+        	
+			<jar destfile="${dist}/jars/${appName}.jar"
+       			basedir="${build.main}"
+			  />
+        	
+			<war destfile="dist/${appName}.war"
+						webxml="src/main/webapp/WEB-INF/web.xml"> 
+				<fileset dir="src/main/webapp/"/>
+  				<lib dir="lib">
+  				</lib>
+  				<lib dir="${dist}/jars/">
+  				</lib>
+  				
+			</war>        	
+        	
+        	
+    </target>
+    
+    <target name="clean" >
+        <delete dir="${build.dir}" />
+        <delete dir="${dist}" />
+        <delete dir="reports" />
+        <delete dir="lib" />
+    </target>
+</project>
