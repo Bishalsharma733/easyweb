@@ -19,15 +19,16 @@
         <ivy:cachepath conf="test" pathid="test.lib.path.id" />
     </target>
 
+	<target name="init">
+	    <mkdir dir="${build.dir}" />
+	    <mkdir dir="${build.main}" />
+	    <mkdir dir="${build.test}" />
+	    <mkdir dir="${dist}" />
+	    <mkdir dir="${dist}/jars" />
+	    <mkdir dir="${reports.tests}" />
+	</target>
 	
-	<target name="go" depends="resolve">
-            
-            <mkdir dir="${build.dir}" />
-            <mkdir dir="${build.main}" />
-            <mkdir dir="${build.test}" />
-            <mkdir dir="${dist}" />
-            <mkdir dir="${dist}/jars" />
-            <mkdir dir="${reports.tests}" />
+	<target name="go" depends="init,resolve">
         	<javac srcdir="${src.dir}" destdir="${build.main}" classpathref="lib.path.id" />
 
         	<javac srcdir="${test.dir}" destdir="${build.test}" >
