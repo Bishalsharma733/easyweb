@@ -28,34 +28,34 @@
 	<target name="compile" depends="init,resolve">
 		<javac srcdir="${src.dir}" destdir="${build.main}" classpathref="lib.path.id" />
 	</target>
-			
 
-	<target name="dist" depends="init, compile">
-        	<javac srcdir="${src.dir}" destdir="${build.main}" classpathref="lib.path.id" />
+	<target name="test" depends="init,compile">
+    	<javac srcdir="${test.dir}" destdir="${build.test}" >
+			<classpath>
+				<pathelement location="${build.main}"/>
+				<pathelement location="${build.test}"/>
+				<path refid="test.lib.path.id"/>
+				</classpath>
+			</javac>
+				        	
+    	<junit fork="yes" forkmode="once" failureproperty="JunitFailed" printsummary="yes">
+			<classpath>
+				<pathelement location="${build.main}"/>
+				<pathelement location="${build.test}"/>
+				<path refid="test.lib.path.id"/>
+				</classpath>
+				<formatter type="xml"/>
+				<formatter type="plain"/>
+				  <batchtest  todir="${reports.tests}">
+				<fileset dir="${test.dir}">
+  					<include name="**/*Test*.java"/>
+				</fileset>
+				</batchtest>
+		</junit>
+    	<fail if="JunitFailed" message="JUnit failures" />
+	</target>
 
-        	<javac srcdir="${test.dir}" destdir="${build.test}" >
-				<classpath>
-    				<pathelement location="${build.main}"/>
-    				<pathelement location="${build.test}"/>
-    				<path refid="test.lib.path.id"/>
-  				</classpath>
-  			</javac>
-  				        	
-        	<junit fork="yes" forkmode="once" failureproperty="JunitFailed" printsummary="yes">
-				<classpath>
-    				<pathelement location="${build.main}"/>
-    				<pathelement location="${build.test}"/>
-    				<path refid="test.lib.path.id"/>
-  				</classpath>
-  				<formatter type="xml"/>
-  				<formatter type="plain"/>
-  				  <batchtest  todir="${reports.tests}">
-    				<fileset dir="${test.dir}">
-      					<include name="**/*Test*.java"/>
-    				</fileset>
-  				</batchtest>
-			</junit>
-        	<fail if="JunitFailed" message="JUnit failures" />
+	<target name="dist" depends="init, test">
         	
 			<jar destfile="${dist.dir}/jars/${appName}.jar"
        			basedir="${build.main}"
