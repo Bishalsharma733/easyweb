@@ -2,8 +2,8 @@
 
     <property name="appName" value="easyweb" />
 
-    <property name="build.dir" value="build" />
-    <property name="dist" value="dist" />
+	<property name="build.dir" value="build" />
+    <property name="dist.dir" value="dist" />
     <property name="build.main" value="${build.dir}/main" />
     <property name="build.test" value="${build.dir}/test" />
     <property name="src.dir" value="src/main/java" />
@@ -23,8 +23,8 @@
 	    <mkdir dir="${build.dir}" />
 	    <mkdir dir="${build.main}" />
 	    <mkdir dir="${build.test}" />
-	    <mkdir dir="${dist}" />
-	    <mkdir dir="${dist}/jars" />
+	    <mkdir dir="${dist.dir}" />
+	    <mkdir dir="${dist.dir}/jars" />
 	    <mkdir dir="${reports.tests}" />
 	</target>
 	
@@ -55,23 +55,23 @@
 			</junit>
         	<fail if="JunitFailed" message="JUnit failures" />
         	
-			<jar destfile="${dist}/jars/${appName}.jar"
+			<jar destfile="${dist.dir}/jars/${appName}.jar"
        			basedir="${build.main}"
 			  />
         	
-			<war destfile="dist/${appName}.war"
+			<war destfile="${dist.dir}/${appName}.war"
 						webxml="src/main/webapp/WEB-INF/web.xml"> 
 				<fileset dir="src/main/webapp/"/>
   				<lib dir="lib">
   				</lib>
-  				<lib dir="${dist}/jars/">
+  				<lib dir="${dist.dir}/jars/">
   				</lib>
 			</war>
     </target>
     
     <target name="clean" >
         <delete dir="${build.dir}" />
-        <delete dir="${dist}" />
+        <delete dir="${dist.dir}" />
         <delete dir="reports" />
         <delete dir="lib" />
     </target>
