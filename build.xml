@@ -1,4 +1,4 @@
-<project xmlns:ivy="antlib:org.apache.ivy.ant" name="easyweb" default="go">
+<project xmlns:ivy="antlib:org.apache.ivy.ant" name="easyweb" default="dist">
 
     <property name="appName" value="easyweb" />
 
@@ -9,11 +9,8 @@
     <property name="src.dir" value="src/main/java" />
     <property name="test.dir" value="src/test/java" />
     <property name="reports.tests" value="reports/tests" />
-    
-    <!-- ================================= 
-          target: resolve              
-         ================================= -->
-    <target name="resolve" description="--> retrieve dependencies with ivy">
+
+    <target name="resolve">
         <ivy:retrieve/>
         <ivy:cachepath conf="main" pathid="lib.path.id" />
         <ivy:cachepath conf="test" pathid="test.lib.path.id" />
@@ -28,7 +25,7 @@
 	    <mkdir dir="${reports.tests}" />
 	</target>
 	
-	<target name="go" depends="init,resolve">
+	<target name="dist" depends="init,resolve">
         	<javac srcdir="${src.dir}" destdir="${build.main}" classpathref="lib.path.id" />
 
         	<javac srcdir="${test.dir}" destdir="${build.test}" >
