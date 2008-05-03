@@ -15,10 +15,12 @@
          ================================= -->
     <target name="resolve" description="--> retrieve dependencies with ivy">
         <ivy:retrieve/>
+        <ivy:cachepath conf="main" pathid="lib.path.id" />
+        <ivy:cachepath conf="test" pathid="test.lib.path.id" />
     </target>
-    <target name="go" depends="resolve">
-            <ivy:cachepath conf="main" pathid="lib.path.id" />
-            <ivy:cachepath conf="test" pathid="test.lib.path.id" />
+
+	
+	<target name="go" depends="resolve">
             
             <mkdir dir="${build.dir}" />
             <mkdir dir="${build.main}" />
