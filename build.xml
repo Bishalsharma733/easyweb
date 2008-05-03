@@ -24,8 +24,13 @@
 	    <mkdir dir="${dist.dir}/jars" />
 	    <mkdir dir="${reports.tests}" />
 	</target>
-	
-	<target name="dist" depends="init,resolve">
+
+	<target name="compile" depends="init,resolve">
+		<javac srcdir="${src.dir}" destdir="${build.main}" classpathref="lib.path.id" />
+	</target>
+			
+
+	<target name="dist" depends="init, compile">
         	<javac srcdir="${src.dir}" destdir="${build.main}" classpathref="lib.path.id" />
 
         	<javac srcdir="${test.dir}" destdir="${build.test}" >
