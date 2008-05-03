@@ -8,6 +8,7 @@
     <property name="build.test" value="${build.dir}/test" />
     <property name="src.dir" value="src/main/java" />
     <property name="test.dir" value="src/test/java" />
+    <property name="reports.dir" value="reports" />
     <property name="reports.tests" value="reports/tests" />
 
     <target name="resolve">
@@ -22,6 +23,7 @@
 	    <mkdir dir="${build.test}" />
 	    <mkdir dir="${dist.dir}" />
 	    <mkdir dir="${dist.dir}/jars" />
+	    <mkdir dir="${reports.dir}" />
 	    <mkdir dir="${reports.tests}" />
 	</target>
 
@@ -56,7 +58,6 @@
 	</target>
 
 	<target name="dist" depends="init, test">
-        	
 			<jar destfile="${dist.dir}/jars/${appName}.jar"
        			basedir="${build.main}"
 			  />
@@ -74,7 +75,7 @@
     <target name="clean" >
         <delete dir="${build.dir}" />
         <delete dir="${dist.dir}" />
-        <delete dir="reports" />
-        <delete dir="lib" />
+        <delete dir="${reports.dir}" />
+        <delete dir="lib" /> 
     </target>
 </project>
