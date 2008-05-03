@@ -1,5 +1,5 @@
 <project xmlns:ivy="antlib:org.apache.ivy.ant" name="easyweb" default="dist">
-
+    <property file="local.properties" />
     <property name="appName" value="easyweb" />
 
 	<property name="build.dir" value="build" />
