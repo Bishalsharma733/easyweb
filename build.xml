@@ -12,11 +12,14 @@
     <property name="functional.test.dir" value="src/functional-tests/java" />
     <property name="reports.dir" value="reports" />
     <property name="reports.tests" value="reports/tests" />
+	<property name="app.servers" value="appservers" />
 	
 	<property name="cargolib.dir" value="cargolib"/>
 	<property name="tomcatlog.dir" value="tomcatlog"/>
 	<property name="tomcatconfig.dir" value="tomcatconfig"/>
-	<property name="tomcat.home" value="../jakarta-tomcat-5.0.28"/>
+	<property name="tomcat-installer-url" 
+	  value="http://www.apache.org/dist/tomcat/tomcat-5/v5.5.26/bin/apache-tomcat-5.5.26.zip"/>
+
 	<property name="tomcat-refid" value="tmptmct01"/>	
     
 	<target name="resolve">
@@ -36,6 +39,7 @@
 	    <mkdir dir="${dist.dir}/jars" />
 	    <mkdir dir="${reports.dir}" />
 	    <mkdir dir="${reports.tests}" />
+	    <mkdir dir="${app.servers}/tomcat" />
 	</target>
 
 	<target name="compile" depends="init,resolve">
@@ -100,17 +104,17 @@
 		<mkdir dir="${tomcatconfig.dir}"/>
 
 		<echo message="Starting Cargo..."/>
-		<echo message="Using tomcat.home = ${tomcat.home} "/>
-		<echo message="Using war = ${dist.dir}/${appName}.war "/>
-		
+		<echo message="Using war = ${dist.dir}/${appName}.war "/>		
 		<cargo  containerId="tomcat5x" 
-		  		home="${tomcat.home}" 
+		  		
 			    wait="false"
 		  		output="${tomcatlog.dir}/output.log" 
 		      	log="${tomcatlog.dir}/cargo.log" 
 		  		action="start" 
 		  		id="${tomcat-refid}">
-  	
+			<zipurlinstaller installurl="${tomcat-installer-url}"
+				installdir="${app.servers}/tomcat"
+			/>
 		    <configuration home="${tomcatconfig.dir}"> 
 		      <property name="cargo.servlet.port" value="8080"/>
 		      <property name="cargo.logging" value="high"/>
@@ -146,7 +150,6 @@
 
 		 <cargo containerId="tomcat5x" action="stop" 
 		       refid="${tomcat-refid}"/>	
-		
     </target>
     
     <target name="clean" >
@@ -155,6 +158,9 @@
         <delete dir="${reports.dir}" />
         <delete dir="${tomcatlog.dir}" /> 
     	<delete dir="${tomcatconfig.dir}"/>
-        <delete dir="lib" /> 
     </target>
+	<target name="clobber" depends="clean">
+        <delete dir="lib" /> 
+		<delete dir="${app.servers}" />
+	</target>
 </project>
