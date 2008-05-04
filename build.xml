@@ -6,21 +6,25 @@
     <property name="dist.dir" value="dist" />
     <property name="build.main" value="${build.dir}/main" />
     <property name="build.test" value="${build.dir}/test" />
+    <property name="build.functional.test" value="${build.dir}/functionaltest" />
     <property name="src.dir" value="src/main/java" />
     <property name="test.dir" value="src/test/java" />
+    <property name="functional.test.dir" value="src/finctional-tests/java" />
     <property name="reports.dir" value="reports" />
     <property name="reports.tests" value="reports/tests" />
-
+	
     <target name="resolve">
         <ivy:retrieve/>
         <ivy:cachepath conf="main" pathid="lib.path.id" />
         <ivy:cachepath conf="test" pathid="test.lib.path.id" />
+        <ivy:cachepath conf="functional-test" pathid="functional.test.lib.path.id" />
     </target>
 
 	<target name="init">
 	    <mkdir dir="${build.dir}" />
 	    <mkdir dir="${build.main}" />
 	    <mkdir dir="${build.test}" />
+	    <mkdir dir="${build.functional.test}" />
 	    <mkdir dir="${dist.dir}" />
 	    <mkdir dir="${dist.dir}/jars" />
 	    <mkdir dir="${reports.dir}" />
@@ -70,6 +74,73 @@
   				<lib dir="${dist.dir}/jars/">
   				</lib>
 			</war>
+		
+		
+		<taskdef resource="cargo.tasks">
+		  <classpath>
+		    <pathelement location="cargolib/cargo-core-uberjar-0.9.jar"/>
+		    <pathelement location="cargolib/cargo-ant-0.9.jar"/>
+		  </classpath>
+		</taskdef>
+		
+		<property name="cargolib.dir" value="cargolib"/>
+		<property name="tomcatconfig.dir" value="tomcatlib"/>
+		<property name="tomcatconfig.dir" value="tomcatconfig"/>
+		<property name="tomcat.home" value="../jakarta-tomcat-5.0.28"/>
+		<property name="tomcat-refid" value="tmptmct01"/>
+		
+		<delete dir="${tomcatconfig.dir}" />
+		<mkdir dir="${tomcatlog.dir}"/>
+		<mkdir dir="${tomcatconfig.dir}"/>
+
+		<echo message="Starting Cargo..."/>
+		<echo message="Using tomcat.home = ${tomcat.home} "/>
+		<echo message="Using war = ${dist.dir}/${appName}.war "/>
+		
+		<cargo  containerId="tomcat5x" 
+		  		wait="false" 
+		  		home="${tomcat.home}" 
+		  		output="${tomcatlog.dir}/output.log" 
+		      	log="${tomcatlog.dir}/cargo.log" 
+		  		action="start" 
+		  		id="${tomcat-refid}">
+  	
+		    <configuration home="${tomcatconfig.dir}"> 
+		      <property name="cargo.servlet.port" value="8080"/>
+		      <property name="cargo.logging" value="high"/>
+		      <deployable type="war" file="${dist.dir}/${appName}.war"/>
+		    </configuration>
+		  </cargo>
+		
+	   		<javac srcdir="${functional.test.dir}" destdir="${build.functional.test}" >
+				<classpath>
+					<pathelement location="${build.main}"/>
+					<pathelement location="${build.test}"/>
+					<pathelement location="${build.functional.test}"/>
+					<path refid="functional.test.lib.path.id"/>
+					</classpath>
+				</javac>
+					        	
+	    	<junit fork="yes" forkmode="once" failureproperty="JunitFailed" printsummary="yes">
+				<classpath>
+					<pathelement location="${build.main}"/>
+					<pathelement location="${build.test}"/>
+					<pathelement location="${build.functional.test}"/>
+					<path refid="functional.test.lib.path.id"/>
+					</classpath>
+					<formatter type="xml"/>
+					<formatter type="plain"/>
+					  <batchtest  todir="${reports.tests}">
+					<fileset dir="${functional.test.dir}">
+	  					<include name="**/*Test*.java"/>
+					</fileset>
+					</batchtest>
+			</junit>
+	    	<fail if="JunitFailed" message="JUnit failures" />
+
+		 <cargo containerId="tomcat5x" action="stop" 
+		       refid="${tomcat-refid}"/>	
+		
     </target>
     
     <target name="clean" >

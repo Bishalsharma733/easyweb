@@ -4,12 +4,11 @@
 <configurations>
    <conf name="main" />
    <conf name="test" extends="main" visibility="private"/>
-   <conf name="AcceptanceTest" extends="test" visibility="private"/>
+   <conf name="functional-test" extends="test" visibility="private"/>
 </configurations>    
     <dependencies>
         <dependency org="commons-lang" name="commons-lang" rev="2.0" conf="main->default"/>
         <dependency org="junit" name="junit" rev="4.4" conf="test->default"/>
-        <dependency org="cargo" name="cargo-ant" rev="0.7" conf="AcceptanceTest->default"/>
-		<dependency org="cargo" name="cargo-core-uberjar" rev="0.7" conf="AcceptanceTest->default"/>
+		<dependency org="httpunit" name="httpunit" rev="1.6.1" conf="functional-test->default"/>
     </dependencies>
 </ivy-module>
