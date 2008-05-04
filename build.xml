@@ -1,4 +1,4 @@
-<project xmlns:ivy="antlib:org.apache.ivy.ant" name="easyweb" default="dist">
+<project xmlns:ivy="antlib:org.apache.ivy.ant" name="easyweb" default="deploy.functional.tests">
     <property file="local.properties" />
     <property name="appName" value="easyweb" />
 
@@ -14,13 +14,13 @@
     <property name="reports.tests" value="reports/tests" />
 	<property name="app.servers" value="appservers" />
 	
-	<property name="cargolib.dir" value="cargolib"/>
-	<property name="tomcatlog.dir" value="tomcatlog"/>
-	<property name="tomcatconfig.dir" value="tomcatconfig"/>
-	<property name="tomcat-installer-url" 
+	<property name="cargo.refid" value="cargoref01"/>
+	<property name="cargo.log.dir" value="tmp/cargolog"/>
+	<property name="cargo.config.dir" value="tmp/cargoconfig"/>
+	<property name="cargo.container.id" value="tomcat5x" />
+	<property name="cargo.container.installer.url" 
 	  value="http://www.apache.org/dist/tomcat/tomcat-5/v5.5.26/bin/apache-tomcat-5.5.26.zip"/>
 
-	<property name="tomcat-refid" value="tmptmct01"/>	
     
 	<target name="resolve">
         <ivy:retrieve/>
@@ -86,7 +86,12 @@
   				</lib>
 			</war>
 		
+	</target>
 		
+	<target name="deploy.functional.tests" depends="init, dist, cargo.start, functional.tests, cargo.stop">
+	</target>
+		
+	<target name="cargo.init" depends="init">
 		<taskdef resource="cargo.tasks">
 		  <classpath>
 		  	<!--
@@ -96,31 +101,35 @@
 			<path refid="cargo.lib.path.id"/>
 		  </classpath>
 		</taskdef>
+	</target>
 		
 
+	<target name="cargo.start" depends="init, cargo.init">
 		
-		<delete dir="${tomcatconfig.dir}" />
-		<mkdir dir="${tomcatlog.dir}"/>
-		<mkdir dir="${tomcatconfig.dir}"/>
+		<delete dir="${cargo.config.dir}" />
+		<mkdir dir="${cargo.log.dir}"/>
+		<mkdir dir="${cargo.config.dir}"/>
 
 		<echo message="Starting Cargo..."/>
 		<echo message="Using war = ${dist.dir}/${appName}.war "/>		
-		<cargo  containerId="tomcat5x" 
+		<cargo  containerId="${cargo.container.id}" 
 		  		
 			    wait="false"
-		  		output="${tomcatlog.dir}/output.log" 
-		      	log="${tomcatlog.dir}/cargo.log" 
+		  		output="${cargo.log.dir}/output.log" 
+		      	log="${cargo.log.dir}/cargo.log" 
 		  		action="start" 
-		  		id="${tomcat-refid}">
-			<zipurlinstaller installurl="${tomcat-installer-url}"
+		  		id="${cargo.refid}">
+			<zipurlinstaller installurl="${cargo.container.installer.url}"
 				installdir="${app.servers}/tomcat"
 			/>
-		    <configuration home="${tomcatconfig.dir}"> 
+		    <configuration home="${cargo.config.dir}"> 
 		      <property name="cargo.servlet.port" value="8080"/>
 		      <property name="cargo.logging" value="high"/>
 		      <deployable type="war" file="${dist.dir}/${appName}.war"/>
 		    </configuration>
 		  </cargo>
+		</target>
+		<target name="functional.tests" depends="init, cargo.init">
 		
 	   		<javac srcdir="${functional.test.dir}" destdir="${build.functional.test}" >
 				<classpath>
@@ -147,17 +156,20 @@
 					</batchtest>
 			</junit>
 	    	<fail if="JunitFailed" message="JUnit failures" />
+	    </target>
+	<target name="cargo.stop" depends="init, cargo.init">
 
-		 <cargo containerId="tomcat5x" action="stop" 
-		       refid="${tomcat-refid}"/>	
+		 <cargo containerId="${cargo.container.id}" action="stop" 
+		       refid="${cargo.refid}"/>	
     </target>
     
     <target name="clean" >
         <delete dir="${build.dir}" />
         <delete dir="${dist.dir}" />
         <delete dir="${reports.dir}" />
-        <delete dir="${tomcatlog.dir}" /> 
-    	<delete dir="${tomcatconfig.dir}"/>
+        <delete dir="${cargo.log.dir}" /> 
+    	<delete dir="${cargo.config.dir}"/>
+    	<delete dir="tmp"/>
     </target>
 	<target name="clobber" depends="clean">
         <delete dir="lib" /> 
