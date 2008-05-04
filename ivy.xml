@@ -5,10 +5,15 @@
    <conf name="main" />
    <conf name="test" extends="main" visibility="private"/>
    <conf name="functional-test" extends="test" visibility="private"/>
+   <conf name="cargo" />
 </configurations>    
     <dependencies>
         <dependency org="commons-lang" name="commons-lang" rev="2.0" conf="main->default"/>
         <dependency org="junit" name="junit" rev="4.4" conf="test->default"/>
 		<dependency org="httpunit" name="httpunit" rev="1.6.1" conf="functional-test->default"/>
+<!--
+		<dependency org="org.codehaus.cargo" rev="0.7" conf="cargo->default" name="cargo-ant" />
+		<dependency org="org.codehaus.cargo" rev="0.7" conf="cargo->default" name="cargo-core-uberjar" />
+-->
     </dependencies>
 </ivy-module>

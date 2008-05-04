@@ -9,15 +9,22 @@
     <property name="build.functional.test" value="${build.dir}/functionaltest" />
     <property name="src.dir" value="src/main/java" />
     <property name="test.dir" value="src/test/java" />
-    <property name="functional.test.dir" value="src/finctional-tests/java" />
+    <property name="functional.test.dir" value="src/functional-tests/java" />
     <property name="reports.dir" value="reports" />
     <property name="reports.tests" value="reports/tests" />
 	
-    <target name="resolve">
+	<property name="cargolib.dir" value="cargolib"/>
+	<property name="tomcatlog.dir" value="tomcatlog"/>
+	<property name="tomcatconfig.dir" value="tomcatconfig"/>
+	<property name="tomcat.home" value="../jakarta-tomcat-5.0.28"/>
+	<property name="tomcat-refid" value="tmptmct01"/>	
+    
+	<target name="resolve">
         <ivy:retrieve/>
         <ivy:cachepath conf="main" pathid="lib.path.id" />
         <ivy:cachepath conf="test" pathid="test.lib.path.id" />
         <ivy:cachepath conf="functional-test" pathid="functional.test.lib.path.id" />
+        <ivy:cachepath conf="cargo" pathid="cargo.lib.path.id" />
     </target>
 
 	<target name="init">
@@ -78,16 +85,12 @@
 		
 		<taskdef resource="cargo.tasks">
 		  <classpath>
-		    <pathelement location="cargolib/cargo-core-uberjar-0.9.jar"/>
-		    <pathelement location="cargolib/cargo-ant-0.9.jar"/>
+			<pathelement location="cargolib/cargo-ant-0.9.jar"/>
+			<pathelement location="cargolib/cargo-core-uberjar-0.9.jar"/>
 		  </classpath>
 		</taskdef>
 		
-		<property name="cargolib.dir" value="cargolib"/>
-		<property name="tomcatconfig.dir" value="tomcatlib"/>
-		<property name="tomcatconfig.dir" value="tomcatconfig"/>
-		<property name="tomcat.home" value="../jakarta-tomcat-5.0.28"/>
-		<property name="tomcat-refid" value="tmptmct01"/>
+
 		
 		<delete dir="${tomcatconfig.dir}" />
 		<mkdir dir="${tomcatlog.dir}"/>
@@ -98,8 +101,8 @@
 		<echo message="Using war = ${dist.dir}/${appName}.war "/>
 		
 		<cargo  containerId="tomcat5x" 
-		  		wait="false" 
 		  		home="${tomcat.home}" 
+			    wait="false"
 		  		output="${tomcatlog.dir}/output.log" 
 		      	log="${tomcatlog.dir}/cargo.log" 
 		  		action="start" 
@@ -147,6 +150,8 @@
         <delete dir="${build.dir}" />
         <delete dir="${dist.dir}" />
         <delete dir="${reports.dir}" />
+        <delete dir="${tomcatlog.dir}" /> 
+    	<delete dir="${tomcatconfig.dir}"/>
         <delete dir="lib" /> 
     </target>
 </project>
