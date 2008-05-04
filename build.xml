@@ -85,8 +85,11 @@
 		
 		<taskdef resource="cargo.tasks">
 		  <classpath>
+		  	<!--
 			<pathelement location="cargolib/cargo-ant-0.9.jar"/>
 			<pathelement location="cargolib/cargo-core-uberjar-0.9.jar"/>
+			-->
+			<path refid="cargo.lib.path.id"/>
 		  </classpath>
 		</taskdef>
 		
