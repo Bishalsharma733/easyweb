@@ -17,10 +17,18 @@
 	<property name="cargo.refid" value="cargoref01"/>
 	<property name="cargo.log.dir" value="tmp/cargolog"/>
 	<property name="cargo.config.dir" value="tmp/cargoconfig"/>
-	<property name="cargo.container.id" value="tomcat5x" />
-	<property name="cargo.container.installer.url" 
-	  value="http://www.apache.org/dist/tomcat/tomcat-5/v5.5.26/bin/apache-tomcat-5.5.26.zip"/>
-
+	
+	<target name="with.tomcat">
+		<property name="cargo.container.id" value="tomcat5x" />
+		<property name="cargo.container.installer.url" 
+		  value="http://www.apache.org/dist/tomcat/tomcat-5/v5.5.26/bin/apache-tomcat-5.5.26.zip"/>
+	</target>
+	
+	<target name="with.resin">
+		<property name="cargo.container.id" value="resin3x" />
+		<property name="cargo.container.installer.url" 
+		  value="http://www.caucho.com/download/resin-3.1.5.zip"/>
+	</target>
     
 	<target name="resolve">
         <ivy:retrieve/>
@@ -28,6 +36,7 @@
         <ivy:cachepath conf="test" pathid="test.lib.path.id" />
         <ivy:cachepath conf="functional-test" pathid="functional.test.lib.path.id" />
         <ivy:cachepath conf="cargo" pathid="cargo.lib.path.id" />
+        <ivy:cachepath conf="coverage" pathid="coverage.lib.path.id" />
     </target>
 
 	<target name="init">
@@ -46,7 +55,12 @@
 		<javac srcdir="${src.dir}" destdir="${build.main}" classpathref="lib.path.id" />
 	</target>
 
-	<target name="test" depends="init,compile">
+	<target name="coverage.init" depends="init">
+		<taskdef classpathref="coverage.lib.path.id" resource="tasks.properties" />
+	</target>
+	<target name="test" depends="init,compile, coverage.init">
+		
+		
     	<javac srcdir="${test.dir}" destdir="${build.test}" >
 			<classpath>
 				<pathelement location="${build.main}"/>
@@ -92,19 +106,11 @@
 	</target>
 		
 	<target name="cargo.init" depends="init">
-		<taskdef resource="cargo.tasks">
-		  <classpath>
-		  	<!--
-			<pathelement location="cargolib/cargo-ant-0.9.jar"/>
-			<pathelement location="cargolib/cargo-core-uberjar-0.9.jar"/>
-			-->
-			<path refid="cargo.lib.path.id"/>
-		  </classpath>
-		</taskdef>
+		<taskdef classpathref="cargo.lib.path.id" resource="cargo.tasks" />
 	</target>
 		
 
-	<target name="cargo.start" depends="init, cargo.init">
+	<target name="cargo.start" depends="init, cargo.init, with.tomcat">
 		
 		<delete dir="${cargo.config.dir}" />
 		<mkdir dir="${cargo.log.dir}"/>

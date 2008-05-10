@@ -3,13 +3,18 @@
 <configurations>
    <conf name="main" />
    <conf name="test" extends="main" visibility="private"/>
+   <conf name="coverage" />
    <conf name="functional-test" extends="test" visibility="private"/>
    <conf name="cargo" />
 </configurations>    
     <dependencies>
         <dependency org="commons-lang" name="commons-lang" rev="2.0" conf="main->default"/>
+        
         <dependency org="junit" name="junit" rev="4.4" conf="test->default"/>
+        <dependency org="cobertura" name="cobertura" rev="1.8" conf="coverage->default"/>
+        
 		<dependency org="httpunit" name="httpunit" rev="1.6.1" conf="functional-test->default"/>
+		
 		<dependency org="org.codehaus.cargo" rev="0.9" conf="cargo->default" name="cargo-ant" />
 		<!--
 		<dependency org="org.codehaus.cargo" rev="0.9" conf="cargo->default" name="cargo-core-uberjar" />
@@ -19,5 +24,6 @@
 		<dependency org="org.codehaus.cargo" rev="0.9" conf="cargo->default" name="cargo-core-container-jboss" />
 		<dependency org="org.codehaus.cargo" rev="0.9" conf="cargo->default" name="cargo-core-container-jetty" />
 		<dependency org="org.codehaus.cargo" rev="0.9" conf="cargo->default" name="cargo-core-container-tomcat" />
+		<dependency org="org.codehaus.cargo" rev="0.9" conf="cargo->default" name="cargo-core-container-resin" />
     </dependencies>
 </ivy-module>
