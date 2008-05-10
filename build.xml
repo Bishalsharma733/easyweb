@@ -6,12 +6,14 @@
     <property name="dist.dir" value="dist" />
     <property name="build.main" value="${build.dir}/main" />
     <property name="build.test" value="${build.dir}/test" />
+    <property name="build.instrumented" value="${build.dir}/instrumented" />
     <property name="build.functional.test" value="${build.dir}/functionaltest" />
     <property name="src.dir" value="src/main/java" />
     <property name="test.dir" value="src/test/java" />
     <property name="functional.test.dir" value="src/functional-tests/java" />
     <property name="reports.dir" value="reports" />
     <property name="reports.tests" value="reports/tests" />
+    <property name="reports.coverage" value="reports/coverage" />
 	<property name="app.servers" value="appservers" />
 	
 	<property name="cargo.refid" value="cargoref01"/>
@@ -43,6 +45,7 @@
 	    <mkdir dir="${build.dir}" />
 	    <mkdir dir="${build.main}" />
 	    <mkdir dir="${build.test}" />
+	    <mkdir dir="${build.instrumented}" />
 	    <mkdir dir="${build.functional.test}" />
 	    <mkdir dir="${dist.dir}" />
 	    <mkdir dir="${dist.dir}/jars" />
@@ -52,7 +55,7 @@
 	</target>
 
 	<target name="compile" depends="init,resolve">
-		<javac srcdir="${src.dir}" destdir="${build.main}" classpathref="lib.path.id" />
+		<javac srcdir="${src.dir}" destdir="${build.main}" classpathref="lib.path.id" debug="true"/>
 	</target>
 
 	<target name="coverage.init" depends="init">
@@ -67,23 +70,35 @@
 				<pathelement location="${build.test}"/>
 				<path refid="test.lib.path.id"/>
 				</classpath>
-			</javac>
-				        	
+		</javac>
+		<delete file="cobertura.ser" />
+
+		<cobertura-instrument todir="${build.instrumented}">
+		    <fileset dir="${build.main}">
+		        <include name="**/*.class" />
+		    </fileset>
+		</cobertura-instrument>		        	
+		
     	<junit fork="yes" forkmode="once" failureproperty="JunitFailed" printsummary="yes">
 			<classpath>
+				<pathelement location="${build.instrumented}"/>
 				<pathelement location="${build.main}"/>
 				<pathelement location="${build.test}"/>
 				<path refid="test.lib.path.id"/>
-				</classpath>
-				<formatter type="xml"/>
-				<formatter type="plain"/>
-				  <batchtest  todir="${reports.tests}">
+				<path refid="coverage.lib.path.id" />
+			</classpath>
+			<formatter type="xml"/>
+			<formatter type="plain"/>
+		    <batchtest  todir="${reports.tests}">
 				<fileset dir="${test.dir}">
   					<include name="**/*Test*.java"/>
 				</fileset>
-				</batchtest>
+			</batchtest>
 		</junit>
     	<fail if="JunitFailed" message="JUnit failures" />
+		
+		<cobertura-report format="html" destdir="${reports.coverage}" srcdir="${src.dir}" />
+		<cobertura-check branchrate="100" totalbranchrate="100" totallinerate="100" />
 	</target>
 
 	<target name="dist" depends="init, test">
