@@ -12,5 +12,4 @@ public class TestMangler {
 		String s = m.mangle("hi there");
 		assertEquals("Hi There", s);
 	}
-
 }

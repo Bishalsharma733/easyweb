@@ -60,6 +60,7 @@
 
 	<target name="coverage.init" depends="init">
 		<taskdef classpathref="coverage.lib.path.id" resource="tasks.properties" />
+		<property name="coverage.data.file" value="${build.dir}/cobertura.ser" />
 	</target>
 	<target name="test" depends="init,compile, coverage.init">
 		
@@ -71,15 +72,17 @@
 				<path refid="test.lib.path.id"/>
 				</classpath>
 		</javac>
-		<delete file="cobertura.ser" />
 
-		<cobertura-instrument todir="${build.instrumented}">
+		<delete file="${coverage.data.file}" />
+		<cobertura-instrument datafile="${coverage.data.file}" todir="${build.instrumented}">
 		    <fileset dir="${build.main}">
 		        <include name="**/*.class" />
 		    </fileset>
 		</cobertura-instrument>		        	
 		
     	<junit fork="yes" forkmode="once" failureproperty="JunitFailed" printsummary="yes">
+    		<sysproperty key="net.sourceforge.cobertura.datafile"
+    				file="${coverage.data.file}" />
 			<classpath>
 				<pathelement location="${build.instrumented}"/>
 				<pathelement location="${build.main}"/>
@@ -97,8 +100,8 @@
 		</junit>
     	<fail if="JunitFailed" message="JUnit failures" />
 		
-		<cobertura-report format="html" destdir="${reports.coverage}" srcdir="${src.dir}" />
-		<cobertura-check branchrate="100" totalbranchrate="100" totallinerate="100" />
+		<cobertura-report datafile="${coverage.data.file}" format="html" destdir="${reports.coverage}" srcdir="${src.dir}" />
+		<cobertura-check datafile="${coverage.data.file}" branchrate="100" totalbranchrate="100" totallinerate="100" />
 	</target>
 
 	<target name="dist" depends="init, test">
