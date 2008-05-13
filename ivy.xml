@@ -2,6 +2,7 @@
     <info organisation="currie" module="ivy1"/>
 <configurations>
    <conf name="main" />
+   <conf name="style" />
    <conf name="test" extends="main" visibility="private"/>
    <conf name="coverage" />
    <conf name="functional-test" extends="test" visibility="private"/>
@@ -10,6 +11,8 @@
     <dependencies>
         <dependency org="commons-lang" name="commons-lang" rev="2.0" conf="main->default"/>
         
+        <dependency org="pmd" name="pmd" rev="4.1" conf="style->default"/>
+
         <dependency org="junit" name="junit" rev="4.4" conf="test->default"/>
         <dependency org="cobertura" name="cobertura" rev="1.8" conf="coverage->default"/>
         
