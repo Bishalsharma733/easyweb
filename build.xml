@@ -55,20 +55,17 @@
 	    <mkdir dir="${app.servers}/tomcat" />
 	</target>
 
-	<target name="compile" depends="init,resolve">
-		<javac srcdir="${src.dir}" destdir="${build.main}" classpathref="lib.path.id" debug="true"/>
+	<target name="style" depends="init,resolve">
+		<taskdef classpathref="style.lib.path.id" resource="checkstyletask.properties" />
+		<checkstyle config="resources/sun_checks.xml">
+		  <fileset dir="${src.dir}" includes="**/*.java"/>
+		  <formatter type="plain"/>
+		</checkstyle>
 	</target>
 
-	<target name="style" depends="init,resolve, compile">
-		 <taskdef name="pmd" classpathref="style.lib.path.id" classname="net.sourceforge.pmd.ant.PMDTask"/>
-		
-		 <pmd rulesetfiles="basic,braces" shortFilenames="true" failonerror="true" failOnRuleViolation="true" >
-		     <formatter type="html" toFile="pmd_report.html" linkPrefix="http://pmd.sourceforge.net/xref/" />
-		     <fileset dir="${src.dir}">
-		        <include name="**/*.java"/>
-		     </fileset>
-		 </pmd>
-	</target>		
+	<target name="compile" depends="init,resolve,style">
+		<javac srcdir="${src.dir}" destdir="${build.main}" classpathref="lib.path.id" debug="true"/>
+	</target>
 
 	<target name="coverage.init" depends="init">
 		<taskdef classpathref="coverage.lib.path.id" resource="tasks.properties" />
