@@ -57,7 +57,7 @@
 
 	<target name="style" depends="init,resolve">
 		<taskdef classpathref="style.lib.path.id" resource="checkstyletask.properties" />
-		<checkstyle config="resources/sun_checks.xml">
+		<checkstyle config="resources/checkstyle-rules.xml">
 		  <fileset dir="${src.dir}" includes="**/*.java"/>
 		  <formatter type="plain"/>
 		</checkstyle>
