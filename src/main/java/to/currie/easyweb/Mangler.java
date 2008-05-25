@@ -15,7 +15,7 @@ public class Mangler {
      * @param message the String to be mangled.
      * @return the String
      */
-    public final String mangle(final String message) {
+    public final String mangle(String message) {
         return WordUtils.capitalizeFully(message);
     }
 }
