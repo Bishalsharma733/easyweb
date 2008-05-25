@@ -29,7 +29,7 @@
 	<target name="with.resin">
 		<property name="cargo.container.id" value="resin3x" />
 		<property name="cargo.container.installer.url" 
-		  value="http://www.caucho.com/download/resin-3.1.5.zip"/>
+		  value="http://www.caucho.com/download/resin-3.0.25.zip"/>
 	</target>
     
 	<target name="resolve">
