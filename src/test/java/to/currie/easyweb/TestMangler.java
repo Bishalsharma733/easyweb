@@ -1,8 +1,10 @@
-package to.currie.ivy1;
+package to.currie.easyweb;
 
 import static org.junit.Assert.*;
 
 import org.junit.Test;
+
+import to.currie.easyweb.Mangler;
 
 public class TestMangler {
 

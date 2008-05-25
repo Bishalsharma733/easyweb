@@ -14,7 +14,7 @@
     <property name="reports.dir" value="reports" />
     <property name="reports.tests" value="reports/tests" />
     <property name="reports.coverage" value="reports/coverage" />
-	<property name="app.servers" value="appservers" />
+	<property name="app.servers" value="../appservers" />
 	
 	<property name="cargo.refid" value="cargoref01"/>
 	<property name="cargo.log.dir" value="tmp/cargolog"/>
@@ -33,13 +33,14 @@
 	</target>
     
 	<target name="resolve">
-        <ivy:retrieve/>
+        <ivy:retrieve log="download-only" />
         <ivy:cachepath conf="main" pathid="lib.path.id" />
         <ivy:cachepath conf="test" pathid="test.lib.path.id" />
         <ivy:cachepath conf="functional-test" pathid="functional.test.lib.path.id" />
         <ivy:cachepath conf="cargo" pathid="cargo.lib.path.id" />
         <ivy:cachepath conf="coverage" pathid="coverage.lib.path.id" />
         <ivy:cachepath conf="style" pathid="style.lib.path.id" />
+		<ivy:cachefileset conf="main" setid="lib.fileset.id" />
     </target>
 
 	<target name="init">
@@ -52,7 +53,7 @@
 	    <mkdir dir="${dist.dir}/jars" />
 	    <mkdir dir="${reports.dir}" />
 	    <mkdir dir="${reports.tests}" />
-	    <mkdir dir="${app.servers}/tomcat" />
+	    <mkdir dir="${app.servers}" />
 	</target>
 
 	<target name="style" depends="init,resolve">
@@ -121,8 +122,7 @@
 			<war destfile="${dist.dir}/${appName}.war"
 						webxml="src/main/webapp/WEB-INF/web.xml"> 
 				<fileset dir="src/main/webapp/"/>
-  				<lib dir="lib">
-  				</lib>
+				<lib refid="lib.fileset.id" />
   				<lib dir="${dist.dir}/jars/">
   				</lib>
 			</war>
@@ -153,7 +153,7 @@
 		  		action="start" 
 		  		id="${cargo.refid}">
 			<zipurlinstaller installurl="${cargo.container.installer.url}"
-				installdir="${app.servers}/tomcat"
+				installdir="${app.servers}"
 			/>
 		    <configuration home="${cargo.config.dir}"> 
 		      <property name="cargo.servlet.port" value="8080"/>
@@ -188,12 +188,13 @@
 					</fileset>
 					</batchtest>
 			</junit>
-	    	<fail if="JunitFailed" message="JUnit failures" />
+	    	
 	    </target>
-	<target name="cargo.stop" depends="init, cargo.init">
+	<target name="cargo.stop" depends="init, resolve, cargo.init">
 
 		 <cargo containerId="${cargo.container.id}" action="stop" 
 		       refid="${cargo.refid}"/>	
+		<fail if="JunitFailed" message="JUnit failures" />
     </target>
     
     <target name="clean" >

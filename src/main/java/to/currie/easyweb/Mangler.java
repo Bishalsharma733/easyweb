@@ -1,4 +1,4 @@
-package to.currie.ivy1;
+package to.currie.easyweb;
 
 import org.apache.commons.lang.WordUtils;
 
