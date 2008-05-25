@@ -146,7 +146,6 @@
 		<echo message="Starting Cargo..."/>
 		<echo message="Using war = ${dist.dir}/${appName}.war "/>		
 		<cargo  containerId="${cargo.container.id}" 
-		  		
 			    wait="false"
 		  		output="${cargo.log.dir}/output.log" 
 		      	log="${cargo.log.dir}/cargo.log" 

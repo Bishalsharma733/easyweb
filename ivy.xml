@@ -1,5 +1,5 @@
 <ivy-module version="2.0">
-    <info organisation="currie" module="ivy1"/>
+    <info organisation="to.currie" module="easyweb"/>
 <configurations>
    <conf name="main" />
    <conf name="style" />
