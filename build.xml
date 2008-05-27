@@ -1,4 +1,4 @@
-<project xmlns:ivy="antlib:org.apache.ivy.ant" name="easyweb" default="deploy.functional.tests">
+<project xmlns:ivy="antlib:org.apache.ivy.ant" name="easyweb" default="all">
     <property file="local.properties" />
     <property name="appName" value="easyweb" />
 
@@ -15,22 +15,24 @@
     <property name="reports.tests" value="reports/tests" />
     <property name="reports.coverage" value="reports/coverage" />
 	<property name="app.servers" value="../appservers" />
+
+    <property name="coverage.data.file" value="${build.dir}/cobertura.ser" />
 	
 	<property name="cargo.refid" value="cargoref01"/>
 	<property name="cargo.log.dir" value="tmp/cargolog"/>
 	<property name="cargo.config.dir" value="tmp/cargoconfig"/>
 	
-	<target name="with.tomcat">
-		<property name="cargo.container.id" value="tomcat5x" />
-		<property name="cargo.container.installer.url" 
-		  value="http://www.apache.org/dist/tomcat/tomcat-5/v5.5.26/bin/apache-tomcat-5.5.26.zip"/>
-	</target>
-	
-	<target name="with.resin">
-		<property name="cargo.container.id" value="resin3x" />
-		<property name="cargo.container.installer.url" 
-		  value="http://www.caucho.com/download/resin-3.0.25.zip"/>
-	</target>
+    <target name="with.tomcat">
+    	<property name="cargo.container.id" value="tomcat5x" />
+    	<property name="cargo.container.installer.url" 
+    	  value="http://www.apache.org/dist/tomcat/tomcat-5/v5.5.26/bin/apache-tomcat-5.5.26.zip"/>
+    </target>
+    
+    <target name="with.resin">
+    	<property name="cargo.container.id" value="resin3x" />
+    	<property name="cargo.container.installer.url" 
+    	  value="http://www.caucho.com/download/resin-3.0.25.zip"/>
+    </target>
     
 	<target name="resolve">
         <ivy:retrieve log="download-only" />
@@ -70,15 +72,11 @@
 
 	<target name="coverage.init" depends="init">
 		<taskdef classpathref="coverage.lib.path.id" resource="tasks.properties" />
-		<property name="coverage.data.file" value="${build.dir}/cobertura.ser" />
 	</target>
 	<target name="test" depends="init,compile, coverage.init">
-		
-		
     	<javac srcdir="${test.dir}" destdir="${build.test}" >
 			<classpath>
 				<pathelement location="${build.main}"/>
-				<pathelement location="${build.test}"/>
 				<path refid="test.lib.path.id"/>
 				</classpath>
 		</javac>
@@ -95,7 +93,6 @@
     				file="${coverage.data.file}" />
 			<classpath>
 				<pathelement location="${build.instrumented}"/>
-				<pathelement location="${build.main}"/>
 				<pathelement location="${build.test}"/>
 				<path refid="test.lib.path.id"/>
 				<path refid="coverage.lib.path.id" />
@@ -108,28 +105,29 @@
 				</fileset>
 			</batchtest>
 		</junit>
-    	<fail if="JunitFailed" message="JUnit failures" />
 		
-		<cobertura-report datafile="${coverage.data.file}" format="html" destdir="${reports.coverage}" srcdir="${src.dir}" />
-		<cobertura-check datafile="${coverage.data.file}" branchrate="100" totalbranchrate="100" totallinerate="100" />
+        <cobertura-report datafile="${coverage.data.file}" format="html" destdir="${reports.coverage}" srcdir="${src.dir}" />
+        
+        <fail if="JunitFailed" message="JUnit failures" />
+        <cobertura-check datafile="${coverage.data.file}" branchrate="100" totalbranchrate="100" totallinerate="100" />
 	</target>
 
 	<target name="dist" depends="init, test">
-			<jar destfile="${dist.dir}/jars/${appName}.jar"
-       			basedir="${build.main}"
-			  />
-        	
-			<war destfile="${dist.dir}/${appName}.war"
-						webxml="src/main/webapp/WEB-INF/web.xml"> 
-				<fileset dir="src/main/webapp/"/>
-				<lib refid="lib.fileset.id" />
-  				<lib dir="${dist.dir}/jars/">
-  				</lib>
-			</war>
+        <jar destfile="${dist.dir}/jars/${appName}.jar"
+        	basedir="${build.main}"
+          />
+        
+        <war destfile="${dist.dir}/${appName}.war"
+        			webxml="src/main/webapp/WEB-INF/web.xml"> 
+        	<fileset dir="src/main/webapp/"/>
+        	<lib refid="lib.fileset.id" />
+        	<lib dir="${dist.dir}/jars/">
+        	</lib>
+        </war>
 		
 	</target>
 		
-	<target name="deploy.functional.tests" depends="init, dist, cargo.start, functional.tests, cargo.stop">
+	<target name="all" depends="init, dist, cargo.start, functional.tests, cargo.stop">
 	</target>
 		
 	<target name="cargo.init" depends="init">
@@ -145,21 +143,21 @@
 
 		<echo message="Starting Cargo..."/>
 		<echo message="Using war = ${dist.dir}/${appName}.war "/>		
-		<cargo  containerId="${cargo.container.id}" 
-			    wait="false"
-		  		output="${cargo.log.dir}/output.log" 
-		      	log="${cargo.log.dir}/cargo.log" 
-		  		action="start" 
-		  		id="${cargo.refid}">
-			<zipurlinstaller installurl="${cargo.container.installer.url}"
-				installdir="${app.servers}"
-			/>
-		    <configuration home="${cargo.config.dir}"> 
-		      <property name="cargo.servlet.port" value="8080"/>
-		      <property name="cargo.logging" value="high"/>
-		      <deployable type="war" file="${dist.dir}/${appName}.war"/>
-		    </configuration>
-		  </cargo>
+        <cargo  containerId="${cargo.container.id}" 
+        	    wait="false"
+          		output="${cargo.log.dir}/output.log" 
+              	log="${cargo.log.dir}/cargo.log" 
+          		action="start" 
+          		id="${cargo.refid}">
+        	<zipurlinstaller installurl="${cargo.container.installer.url}"
+        		installdir="${app.servers}"
+        	/>
+            <configuration home="${cargo.config.dir}"> 
+              <property name="cargo.servlet.port" value="8080"/>
+              <property name="cargo.logging" value="high"/>
+              <deployable type="war" file="${dist.dir}/${appName}.war"/>
+            </configuration>
+          </cargo>
 		</target>
 		<target name="functional.tests" depends="init, cargo.init">
 		
