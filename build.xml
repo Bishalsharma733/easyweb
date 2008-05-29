@@ -61,9 +61,15 @@
 	<target name="style" depends="init,resolve">
 		<taskdef classpathref="style.lib.path.id" resource="checkstyletask.properties" />
 		<checkstyle config="resources/checkstyle-rules.xml">
-		  <fileset dir="${src.dir}" includes="**/*.java"/>
+	          <fileset dir="${src.dir}" includes="**/*.java"/>
 		  <formatter type="plain"/>
 		</checkstyle>
+		
+        <checkstyle config="resources/checkstyle-rules-test.xml">
+              <fileset dir="${test.dir}" includes="**/*.java"/>
+              <fileset dir="${functional.test.dir}" includes="**/*.java"/>
+          <formatter type="plain"/>
+        </checkstyle>
 	</target>
 
 	<target name="compile" depends="init,resolve,style">
